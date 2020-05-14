@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Regex Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/muse-ui/dist/muse-ui.css">
+    <script src="https://unpkg.com/muse-ui/dist/muse-ui.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/material-design-icons/3.0.1/iconfont/material-icons.css">
+    <script src="test.js"></script>
+    
+    <script>
+        args = []
+        white_list_obj = []
+        black_list_obj = []
+        white_list = []
+        black_list = []
+        result = [{
+            rank:1,
+            capability_value:2,
+            regex_string:"111111"
+        }]
+        window.onclose = function(){
+            
+        }
+    </script>
+    <style>
+        .top_space{
+            height: 100px;
+            width: 100%;
+            
+        }
+        .left{
+            width: 70%;
+            height: 2000px;
+            
+            float: left;
+            text-align: center;
+            border-right-width: 1px;
+            
+        }
+        .right{
+            width: 30%;
+            height: 1000px;
+            text-align: center;
+            float: left;
+            
+        }
+        .mid_container{
+            float: left;
+        }
+        .console_paper_arg{
+            width: 90%;
+            height: 1000px;
+            margin:0 auto;
+            
+        }
+        .list_injection_paper{
+            width: 80%;
+            height: 2000px;
+            margin:0 auto;
+        }
+        .prob{
+            width:80%
+        }
+        .short_value{
+            width:30%
+        }
+        .list_injection{
+            width:60%
+        }
+        .wblist{
+            width: 80%;
+            margin: 0 auto;
+            
+            
+            
+
+        }
+    
+    </style>
+
+
+</head>
+
+
+
+<body> 
+
+<!-------------------------------------------------------------------->
+
+
+
+<div id = "apptitle">
+    <mu-appbar title = "Regex Generator" color = "primary" ></mu-appbar>
+</div>
+<div class="top_space"></div>
+
+
+<div>
+    <div class="left">
+        <!------------------------DISPLAY AREA--------------------------------->
+
+        <div id = "list_injection_paper">
+            <mu-paper :z-depth = "1" class="list_injection_paper">
+                <br><br>
+                    <mu-text-field v-model="new_white_list" label="White List String" label-float class="list_injection"></mu-text-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <mu-button color = "primary" @click="add_white_list">ADD</mu-button>
+                    <mu-button color = "red300" @click="remove_white_list">REMOVE</mu-button><br>
+                    <mu-text-field v-model="new_black_list" label="Black List String" label-float class="list_injection"></mu-text-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <mu-button color = "primary" @click="add_black_list">ADD</mu-button>
+                    <mu-button color = "red300" @click="remove_black_list">REMOVE</mu-button><br>
+
+                    <mu-button color = "primary" @click="set_default_list" large = true>USE DEFAULT</mu-button>
+                    <br><br><br>
+
+                    <mu-divider></mu-divider>
+                    <div class="wblist">
+                        <mu-data-table :columns="white_columns" :data="white_lists" no-data-text = "No Data">
+                            <template slot-scope="white_scope">
+                                <td>{{white_scope.row.order}}</td>
+                                <td>{{white_scope.row.content}}</td>
+                            
+                            
+                            </template>
+                        </mu-data-table>
+                    </div>
+                    <br>
+                    <mu-divider></mu-divider>
+                    <br><br><br>
+                    <mu-divider></mu-divider>
+                    <div class="wblist">
+                            <mu-data-table :columns="black_columns" :data="black_lists" no-data-text = "No Data">
+                                <template slot-scope="black_scope">
+                                    <td>{{black_scope.row.order}}</td>
+                                    <td>{{black_scope.row.content}}</td>
+                                
+                                
+                                </template>
+                            </mu-data-table>
+                    </div>
+                    <br><br><br>
+                    <mu-divider></mu-divider>
+                    <br><br><br>
+                    <mu-divider></mu-divider>
+                    <div class="wblist">
+                            <mu-data-table :columns="result_columns" :data="results" no-data-text = "No Data">
+                                <template slot-scope="result_scope">
+                                    <td>{{result_scope.row.rank}}</td>
+                                    <td>{{result_scope.row.capability_value}}</td>
+                                    <td>{{result_scope.row.regex_string}}</td>
+                                
+                                
+                                </template>
+                            </mu-data-table>
+                    </div>
+
+
+                    <br><br><br>
+                    <mu-divider></mu-divider>
+
+
+                    
+            </mu-paper>
+
+        </div>
+    </div>
+    
+    
+    <div class="right">
+        <!-------------------------------CONSOLE------------------------------->
+        <div id = "console_paper_arg">
+            <mu-paper :z-depth = "1" class="console_paper_arg">
+                <br>
+                <mu-text-field v-model="out_mut_prob" label="Out Mutation Probability" suffix="%" label-float class="prob"></mu-text-field><br>
+                <mu-text-field v-model="in_mut_prob" label="In Mutation Probability" suffix="%" label-float class="prob"></mu-text-field><br>
+                <mu-text-field v-model="out_sub_mut_prob" label="Out Sub Mutation Probability" suffix="%" label-float class="prob"></mu-text-field><br>
+                <mu-text-field v-model="in_sub_mut_prob" label="In Sub Mutation Probability" suffix="%" label-float class="prob"></mu-text-field><br>
+
+                <mu-text-field v-model="crossover_prob" label="Crossover Probability" suffix="%" label-float class="short_value"></mu-text-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <mu-text-field v-model="crossover_times" label="Crossover Times"  label-float class="short_value"></mu-text-field><br>
+                
+
+                <mu-text-field v-model="group_number" label="Group Number" label-float class="short_value"></mu-text-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <mu-text-field v-model="regex_length" label="Regex Length" label-float class="short_value"></mu-text-field><br>
+                <mu-text-field v-model="generation" label="Generation" label-float class="short_value"></mu-text-field>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <mu-text-field v-model="capability_limitation" label="Capability Limitation" label-float class="short_value"></mu-text-field><br>
+                <mu-button color = "primary" @click="set_default_args">SET DEFAULT ARGS</mu-button><br><br>
+                <mu-button color = "red300" @click="clear">&nbsp;&nbsp;CLEAR ALL ARGS&nbsp;&nbsp;</mu-button><br><br>
+                <mu-button @click="run_generator" large = true color = "success">RUN GENERATOR</mu-button>
+            </mu-paper>
+        </div>
+    </div>
+
+
+</div>
+<div class="top_space"></div>
+
+
+
+
+<script>
+      
+      
+//----------------------------------------------------
+
+    var app_title = new Vue({//标题
+            el:'#apptitle'
+    })
+    
+    var console_paper_arg = new Vue({//参数注入
+        el:'#console_paper_arg',
+        data:function() {
+            return {
+                out_mut_prob:"",
+                in_mut_prob:"",
+                out_sub_mut_prob:"",
+                in_sub_mut_prob:"",
+                group_number:"",
+                regex_length:"",
+                generation:"",
+                capability_limitation:"",
+                crossover_prob:"",
+                crossover_times:"",
+                visibility: false
+            }
+        },
+        methods:{
+            set_default_args:function(){
+                this.out_mut_prob = 40
+                this.in_mut_prob = 60
+                this.out_sub_mut_prob = 90
+                this.in_sub_mut_prob = 50
+                this.crossover_prob = 50
+                this.crossover_times = 50
+                this.group_number = 3
+                this.regex_length = 4
+                this.generation = 10000
+                this.capability_limitation = 7
+                
+            },
+            clear:function(){
+                this.out_mut_prob = ""
+                this.in_mut_prob = ""
+                this.out_sub_mut_prob = ""
+                this.in_sub_mut_prob = ""
+                this.crossover_prob = ""
+                this.crossover_times = ""
+                this.group_number = ""
+                this.regex_length = ""
+                this.generation = ""
+                this.capability_limitation = ""
+                
+            },
+            run_generator:function(){
+                var wl = []
+                var bl = []
+                for(var wl_ctrl = 0;wl_ctrl < white_list_obj.length;wl_ctrl++){
+                    wl.push(white_list_obj[wl_ctrl].content)
+                }
+                for(var bl_ctrl = 0;bl_ctrl < black_list_obj.length;bl_ctrl++){
+                    bl.push(black_list_obj[bl_ctrl].content)
+                }
+                result = run(wl,bl,this.out_mut_prob,this.in_mut_prob,this.out_sub_mut_prob,this.in_sub_mut_prob,this.group_number,this.regex_length,this.generation,this.capability_limitation,
+                this.crossover_prob,this.crossover_times)
+                list_injection_paper.results = result
+                mlog(result)
+            }
+            
+        }
+    })
+    
+    var list_injection_paper = new Vue({
+        el:'#list_injection_paper',
+        data:function(){
+            return{
+                new_white_list:"",
+                new_black_list:"",
+
+                white_lists:white_list_obj,
+                black_lists:black_list_obj,
+                results: result,
+
+                white_columns: [
+                    { title: 'Order', width: 100, name: 'order' },
+                    { title: 'Content', name: 'content', width: 300,cellAlign: 'right'},
+                ],
+                black_columns: [
+                    { title: 'Order', width: 100, name: 'order' },
+                    { title: 'Content', name: 'content', width: 300,cellAlign: 'right'},
+                ],
+                result_columns: [
+                    { title: 'Rank', width: 100, name: 'rank'},
+                    { title: 'Capability Value', width: 100, name: 'capability_value'},
+                    { title: 'Regex', name: 'regex_string', width: 300}
+                ]
+
+            }
+        },
+        methods:{
+            add_black_list:function(){
+                black_list_obj.push({
+                    order:black_list_obj.length + 1,
+                    content:this.new_black_list
+                })
+                
+                this.new_black_list = ""
+                
+            },
+            add_white_list:function(){
+                white_list_obj.push({
+                    order:white_list_obj.length + 1,
+                    content:this.new_white_list
+                })
+
+                this.new_white_list = ""
+            },
+            remove_black_list:function(){
+                black_list_obj.pop()
+            },
+            remove_white_list:function(){
+                white_list_obj.pop()
+            },
+            set_default_list:function(){
+                
+                black_list_obj.push({
+                    order:1,
+                    content:"a"
+                })
+                black_list_obj.push({
+                    order:2,
+                    content:"b"
+                })
+                black_list_obj.push({
+                    order:3,
+                    content:"c"
+                })
+                white_list_obj.push({
+                    order:1,
+                    content:"0"
+                })
+                white_list_obj.push({
+                    order:2,
+                    content:"011"
+                })
+                white_list_obj.push({
+                    order:3,
+                    content:"114514"
+                })
+                white_list_obj.push({
+                    order:4,
+                    content:"9"
+                })
+            }
+        }
+    })    
+
+            
+</script>
+
+
+
+</body>
+</html>
